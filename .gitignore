@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Marimo
+.marimo/
+__marimo__/
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Sistema
+.DS_Store
+Thumbs.db
