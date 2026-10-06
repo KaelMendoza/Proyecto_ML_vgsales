@@ -3,14 +3,22 @@
 Proyecto de Introducción a Machine Learning para predecir las ventas globales de videojuegos utilizando información sobre sus características, críticas y datos de publicación.
 
 Dante Tlacaelel Mendoza Alcantar 
+
 GitUser: Kael Mendoza
+
 Commits:
+
 e902fc45d318438b9bc0901a20993109f0919054
+
 2f455ce1f12a1f14b3d333f6c79f383a3179dc7f
 
+
 Oliver O´Brian Rodríguez Pinedo 
+
 GitUser: azfanatic
+
 Commits:
+
 04a679b3a5ba5142ed62f3a872dbb1ffebca6bcf
 
 ## Objetivo
