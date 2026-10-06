@@ -174,11 +174,18 @@ El proyecto utiliza una semilla fija (`random_state = 42`) para obtener resultad
 ### Preguntas de reflexión 
 
 ¿Qué implementaste y qué decisión técnica tomaste para realizarla?
+
 Dante: Implemente la base de datos y la selección de variables, además la decisión de los modelos de regresión a usar viendo que nos convenia mas, usamos ayuda de agentes de IA para codear.
+
 ¿Cómo verificaste tu aportación?
+
 Dante: Haciendo pruebas tanto de los .py en vscode conforme se iban codeando y también en marimo para auditar cada parte de mi proceso.
+
 ¿Qué observaste o aprendiste al revisar el trabajo de otra persona?
+
 Dante: Este equipo se formo en un día pues ambos no teniamos equipo,  asi que decidimos darnos libertad en el proceso para poder entregar a tiempo el trabajo.
+
 ¿Qué mejorarías en la siguiente versión?
+
 Dante: Me gustaría añadir mas modelos para tener mas puntos de comparación, además de fusionar otra base de datos, la actual cuenta con solo 16k datos, mientras que otra que tengo en cuenta para un futuro cuenta con mas de de 460k, siendo también una base mas actualizada que podría ayudar a mejorar los modelos implementados y a implementar.
 Me gustaría mejorar la sincronización con mi compañero para dar un trabajo más aceptable y mejor estructurado.
