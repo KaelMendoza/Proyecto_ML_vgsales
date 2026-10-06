@@ -5,8 +5,7 @@ from src.data import (
 )
 
 from src.split import split_data
-from src.preprocessing import build_preprocessor
-from src.models import build_models
+from src.models import build_pipelines
 from src.evaluation import calculate_metrics
 
 
@@ -18,11 +17,10 @@ def train_and_evaluate():
     1. Carga y limpieza de datos.
     2. Separación de variables predictoras y objetivo.
     3. División en entrenamiento, validación y prueba.
-    4. Preprocesamiento.
-    5. Entrenamiento de modelos.
-    6. Evaluación sobre validación.
-    7. Selección del mejor modelo.
-    8. Evaluación final sobre test.
+    4. Construcción de pipelines (preprocesamiento + modelo).
+    5. Entrenamiento y evaluación sobre validación.
+    6. Selección del mejor modelo.
+    7. Evaluación final sobre test.
     """
 
     # ============================================================
@@ -61,68 +59,37 @@ def train_and_evaluate():
     print(f"Prueba:        {X_test.shape}")
 
     # ============================================================
-    # 3. PREPROCESSING
+    # 3. CONSTRUCCIÓN DE LOS PIPELINES
     # ============================================================
 
-    print("\n" + "=" * 60)
-    print("PREPROCESSING")
-    print("=" * 60)
-
-    preprocessor = build_preprocessor()
-
-    # IMPORTANTE:
-    # El preprocessor solamente aprende los parámetros
-    # utilizando el conjunto de entrenamiento.
-    X_train_processed = preprocessor.fit_transform(X_train)
-
-    # Validación y test solamente reciben las transformaciones
-    # aprendidas a partir del entrenamiento.
-    X_validation_processed = preprocessor.transform(
-        X_validation
-    )
-
-    X_test_processed = preprocessor.transform(
-        X_test
-    )
-
-    print(
-        f"Características después del preprocessing: "
-        f"{X_train_processed.shape[1]}"
-    )
-
-    # ============================================================
-    # 4. CONSTRUCCIÓN DE LOS MODELOS
-    # ============================================================
-
-    models = build_models()
+    # Cada pipeline integra el preprocesamiento y el modelo.
+    # Al hacer fit() solo con X_train, el preprocesamiento se ajusta
+    # únicamente con datos de entrenamiento. Al hacer predict(), las
+    # transformaciones aprendidas se aplican a datos nuevos sin reajustarse.
+    pipelines = build_pipelines()
 
     # Diccionario para guardar los resultados de validación.
     validation_results = {}
 
     # ============================================================
-    # 5. ENTRENAMIENTO Y EVALUACIÓN
+    # 4. ENTRENAMIENTO Y EVALUACIÓN EN VALIDACIÓN
     # ============================================================
 
     print("\n" + "=" * 60)
     print("RESULTADOS DE VALIDACIÓN")
     print("=" * 60)
 
-    for model_name, model in models.items():
+    for model_name, pipeline in pipelines.items():
 
         print(f"\nEntrenando: {model_name}")
 
-        # Entrenamiento únicamente con los datos de entrenamiento.
-        model.fit(
-            X_train_processed,
-            y_train,
-        )
+        # Entrenamiento únicamente con los datos de entrenamiento
+        # (incluye el ajuste del preprocesamiento).
+        pipeline.fit(X_train, y_train)
 
-        # Predicciones sobre validación.
-        y_validation_pred = model.predict(
-            X_validation_processed
-        )
+        # Predicciones sobre validación (datos sin transformar).
+        y_validation_pred = pipeline.predict(X_validation)
 
-        # Cálculo de métricas.
         metrics = calculate_metrics(
             y_validation,
             y_validation_pred,
@@ -135,7 +102,7 @@ def train_and_evaluate():
         print(f"R²:   {metrics['R2']:.4f}")
 
     # ============================================================
-    # 6. SELECCIÓN DEL MEJOR MODELO
+    # 5. SELECCIÓN DEL MEJOR MODELO
     # ============================================================
 
     # Para regresión:
@@ -150,7 +117,7 @@ def train_and_evaluate():
         key=lambda name: validation_results[name]["RMSE"],
     )
 
-    best_model = models[best_model_name]
+    best_pipeline = pipelines[best_model_name]
 
     print("\n" + "=" * 60)
     print("MEJOR MODELO")
@@ -163,7 +130,7 @@ def train_and_evaluate():
     )
 
     # ============================================================
-    # 7. EVALUACIÓN FINAL SOBRE TEST
+    # 6. EVALUACIÓN FINAL SOBRE TEST
     # ============================================================
 
     print("\n" + "=" * 60)
@@ -174,9 +141,7 @@ def train_and_evaluate():
     # el modelo. Solamente se utiliza aquí para obtener
     # la evaluación final.
 
-    y_test_pred = best_model.predict(
-        X_test_processed
-    )
+    y_test_pred = best_pipeline.predict(X_test)
 
     test_metrics = calculate_metrics(
         y_test,
@@ -189,15 +154,14 @@ def train_and_evaluate():
     print(f"R²:     {test_metrics['R2']:.4f}")
 
     # ============================================================
-    # 8. RETORNAR RESULTADOS
+    # 7. RETORNAR RESULTADOS
     # ============================================================
 
     return {
-        "preprocessor": preprocessor,
-        "models": models,
+        "pipelines": pipelines,
         "validation_results": validation_results,
         "best_model_name": best_model_name,
-        "best_model": best_model,
+        "best_pipeline": best_pipeline,
         "test_metrics": test_metrics,
         "y_test": y_test,
         "y_test_pred": y_test_pred,
